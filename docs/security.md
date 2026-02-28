@@ -1,4 +1,4 @@
-# 北島病院 ローカルLLM 監視・自動化・遠隔管理 設計書
+# 院内ローカルLLM 監視・自動化・遠隔管理 設計書
 **作成日**: 2026-02-28
 **対象**: Mac mini 2018（DMZ内 LLMサーバー）
 
@@ -12,7 +12,7 @@ Mac mini（DMZ内）
   ├── launchd（Ollama自動再起動）
   ├── 異常検知スクリプト（5分ごと自動実行）
   ├── iMessage自動アラート → 管理者全員に通知
-  └── Tailscale SSH（川田先生のみ遠隔停止可能）
+  └── Tailscale SSH（システム管理者のみ遠隔停止可能）
 ```
 
 ---
@@ -73,7 +73,7 @@ sudo launchctl kickstart -k system/com.openssh.sshd
 
 | 方向 | 送信元 | 宛先ポート | 許可/拒否 | 理由 |
 |:-----|:-------|:---------|:---------|:-----|
-| 受信 | 川田先生PC（固定IP） | 22（SSH） | ✅ 許可 | 監視・メンテ |
+| 受信 | 管理者PC（固定IP） | 22（SSH） | ✅ 許可 | 監視・メンテ |
 | 受信 | 使用端末（固定IP） | 11434（Ollama API） | ✅ 許可 | LLM呼び出し |
 | 受信 | 19999（Netdata） | 院内LAN全体 | ✅ 許可 | ダッシュボード閲覧 |
 | 受信 | その他すべて | 全ポート | ❌ 拒否 | |
@@ -175,7 +175,7 @@ send_imessage() {
 
 # Ollama死活確認
 if ! pgrep -x "ollama" > /dev/null; then
-  MSG="⚠️ [北島病院LLM] $DATE
+  MSG="⚠️ [院内LLM] $DATE
 Ollamaが停止しています。自動再起動を試みます。"
   send_imessage "$MSG"
   echo "$DATE | ERROR: Ollama stopped" >> $LOG
@@ -187,7 +187,7 @@ MEM_TOTAL=$(sysctl -n hw.memsize)
 MEM_PCT=$(echo "scale=0; $MEM_USED * 16384 * 100 / $MEM_TOTAL" | bc)
 
 if [ "$MEM_PCT" -gt 90 ]; then
-  MSG="⚠️ [北島病院LLM] $DATE
+  MSG="⚠️ [院内LLM] $DATE
 メモリ使用率が${MEM_PCT}%です。確認してください。"
   send_imessage "$MSG"
   echo "$DATE | WARNING: Memory ${MEM_PCT}%" >> $LOG
@@ -199,7 +199,7 @@ EXTERNAL=$(sudo lsof -i -n -P | grep ESTABLISHED \
   | grep -v "127\.0\.0\.1" \
   | grep -v "192\.168\.")
 if [ -n "$EXTERNAL" ]; then
-  MSG="🚨 [北島病院LLM] $DATE
+  MSG="🚨 [院内LLM] $DATE
 不審な外部通信を検知しました！
 $EXTERNAL
 即座に確認してください。"
@@ -278,7 +278,7 @@ sudo shutdown -h now
 
 | 役割 | アクセス手段 | できること |
 |:-----|:-----------|:---------|
-| 川田先生 | Tailscale SSH | 全操作・緊急停止 |
+| システム管理者 | Tailscale SSH | 全操作・緊急停止 |
 | 事務長・管理者 | Netdashボード（URL） | 状態閲覧のみ |
 | 全員 | iMessageアラート | 異常通知の受信 |
 

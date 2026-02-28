@@ -1,9 +1,9 @@
-# 院内AI研究会 — medical-local-ai
+# Medical AI Makers — medical-local-ai
 
 **病院のデータを外に出さずにAIを使う**
 医療従事者が自分たちで作り、保守するオープンソース院内AIシステム
 
-[![Discord](https://img.shields.io/badge/Discord-院内AI研究会-5865F2?logo=discord)](https://discord.gg/bCkMtK6Xy)
+[![Discord](https://img.shields.io/badge/Discord-Medical_AI_Makers-5865F2?logo=discord)](https://discord.gg/bCkMtK6Xy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
@@ -85,9 +85,7 @@ ollama run gemma3:4b
 
 ## 発起人
 
-**川田 通広**
-内科・外科医 / 麻酔標榜医
-北島病院勤務
+地方病院勤務の内科・外科医（麻酔標榜医）
 
 > 私はプログラマーではなく、臨床医です。
 > AIツールの助けを借りながらこのシステムを作りました。
